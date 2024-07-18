@@ -1,10 +1,15 @@
+use std::ops::Add;
+
 pub struct Matrix<T> {
     rows: usize,
     cols: usize,
     values: Vec<T>,
 }
 
-impl<T> Matrix<T> {
+impl<T> Matrix<T>
+where
+    T: Add<Output = T> + Copy,
+{
     pub fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row < self.rows && col < self.cols {
             let index = (row * self.cols) + col;
@@ -12,6 +17,24 @@ impl<T> Matrix<T> {
         } else {
             None
         }
+    }
+
+    pub fn add(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
+        if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
+            return Err("Cannot add, matrices must have matching dimensions");
+        }
+
+        let mut new_values: Vec<T> = Vec::with_capacity(self.values.len());
+
+        for i in 0..self.values.len() {
+            new_values.push(self.values[i] + matrix_b.values[i]);
+        }
+
+        Ok(Matrix {
+            rows: self.rows,
+            cols: self.cols,
+            values: new_values,
+        })
     }
 }
 
