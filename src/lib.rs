@@ -1,5 +1,4 @@
-use std::ops::Add;
-use std::ops::Sub;
+use std::ops::{Add, Sub};
 
 #[derive(Debug, PartialEq)]
 pub struct Matrix<T> {
