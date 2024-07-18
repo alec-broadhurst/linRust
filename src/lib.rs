@@ -1,5 +1,6 @@
 use std::ops::Add;
 
+#[derive(Debug, PartialEq)]
 pub struct Matrix<T> {
     rows: usize,
     cols: usize,
@@ -57,5 +58,31 @@ mod tests {
         assert_eq!(matrix.get(3, 0), None);
         assert_eq!(matrix.get(0, 3), None);
         assert_eq!(matrix.get(3, 3), None);
+    }
+
+    #[test]
+    fn check_addition() {
+        let matrix_a: Matrix<u32> = Matrix {
+            rows: 2,
+            cols: 2,
+            values: vec![1, 2, 3, 4],
+        };
+
+        let matrix_b: Matrix<u32> = Matrix {
+            rows: 2,
+            cols: 2,
+            values: vec![5, 6, 7, 8],
+        };
+
+        let expected_result: Matrix<u32> = Matrix {
+            rows: 2,
+            cols: 2,
+            values: vec![6, 8, 10, 12],
+        };
+
+        match matrix_a.add(&matrix_b) {
+            Ok(result) => assert_eq!(result, expected_result),
+            Err(e) => panic!("Addition failed: {}", e),
+        }
     }
 }
