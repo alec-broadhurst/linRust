@@ -104,4 +104,30 @@ mod tests {
             Err(e) => panic!("Addition failed: {}", e),
         }
     }
+
+    #[test]
+    fn check_subtraction() {
+        let matrix_a: Matrix<i32> = Matrix {
+            rows: 3,
+            cols: 3,
+            values: vec![1, 2, 3, 4, 5, 6, 7, 8, 9],
+        };
+
+        let matrix_b: Matrix<i32> = Matrix {
+            rows: 3,
+            cols: 3,
+            values: vec![10, 21, 12, 13, 14, 15, 16, 17, 18],
+        };
+
+        let expected_result: Matrix<i32> = Matrix {
+            rows: 3,
+            cols: 3,
+            values: vec![-9, -19, -9, -9, -9, -9, -9, -9, -9],
+        };
+
+        match matrix_a.subtract(&matrix_b) {
+            Ok(result) => assert_eq!(result, expected_result),
+            Err(e) => panic!("Addition failed: {}", e),
+        }
+    }
 }
