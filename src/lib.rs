@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, AddAssign, Mul, Sub};
 
 #[derive(Debug, PartialEq)]
 pub struct Matrix<T> {
@@ -9,7 +9,7 @@ pub struct Matrix<T> {
 
 impl<T> Matrix<T>
 where
-    T: Add<Output = T> + Sub<Output = T> + Copy,
+    T: Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Copy + Default + AddAssign,
 {
     pub fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row < self.rows && col < self.cols {
@@ -67,6 +67,32 @@ where
 
         std::mem::swap(&mut self.rows, &mut self.cols);
         self.values = new_values;
+    }
+
+    pub fn mult_naive(&self, matrix_b: &mut Matrix<T>) -> Result<Matrix<T>, &str> {
+        if self.cols != matrix_b.rows {
+            return Err("Unable to multiply, invalid dimensions");
+        }
+
+        matrix_b.transpose();
+        let mut new_values: Vec<T> = Vec::with_capacity(matrix_b.rows * self.cols);
+
+        for i in 0..self.rows {
+            for j in 0..matrix_b.cols {
+                let mut sum: T = Default::default();
+                for k in 0..self.cols {
+                    sum += *self.get(i, k).unwrap() * *matrix_b.get(j, k).unwrap();
+                }
+
+                new_values.push(sum);
+            }
+        }
+
+        Ok(Matrix {
+            rows: matrix_b.rows,
+            cols: self.cols,
+            values: new_values,
+        })
     }
 }
 
@@ -159,5 +185,29 @@ mod tests {
 
         matrix_a.transpose();
         assert_eq!(matrix_a, expected_result);
+    }
+
+    #[test]
+    fn check_naive() {
+        let matrix_a: Matrix<i32> = Matrix {
+            rows: 2,
+            cols: 3,
+            values: vec![1, 2, 3, 4, 5, 6],
+        };
+
+        let mut matrix_b: Matrix<i32> = Matrix {
+            rows: 3,
+            cols: 2,
+            values: vec![7, 8, 9, 10, 11, 12],
+        };
+
+        let expected_result: Matrix<i32> = Matrix {
+            rows: 2,
+            cols: 2,
+            values: vec![58, 64, 139, 154],
+        };
+
+        let result = matrix_a.mult_naive(&mut matrix_b).unwrap();
+        assert_eq!(result, expected_result);
     }
 }
