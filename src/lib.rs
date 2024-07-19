@@ -59,9 +59,9 @@ where
     pub fn transpose(&mut self) {
         let mut new_values: Vec<T> = Vec::with_capacity(self.rows * self.cols);
 
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                new_values[j * self.rows + i] = self.values[i * self.cols + j];
+        for i in 0..self.cols {
+            for j in 0..self.rows {
+                new_values.push(*self.get(j, i).unwrap());
             }
         }
 
@@ -154,7 +154,7 @@ mod tests {
         let expected_result: Matrix<i32> = Matrix {
             rows: 3,
             cols: 2,
-            values: vec![1, 9, -3, 4, 5, 7],
+            values: vec![1, -9, -3, 4, 5, 7],
         };
 
         matrix_a.transpose();
