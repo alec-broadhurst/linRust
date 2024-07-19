@@ -55,6 +55,19 @@ where
             values: new_values,
         })
     }
+
+    pub fn transpose(&mut self) {
+        let mut new_values: Vec<T> = Vec::with_capacity(self.rows * self.cols);
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                new_values[j * self.rows + i] = self.values[i * self.cols + j];
+            }
+        }
+
+        std::mem::swap(&mut self.rows, &mut self.cols);
+        self.values = new_values;
+    }
 }
 
 #[cfg(test)]
