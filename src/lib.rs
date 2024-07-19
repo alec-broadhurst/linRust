@@ -142,4 +142,22 @@ mod tests {
             Err(e) => panic!("Addition failed: {}", e),
         }
     }
+
+    #[test]
+    fn check_transpose() {
+        let mut matrix_a: Matrix<i32> = Matrix {
+            rows: 2,
+            cols: 3,
+            values: vec![1, -3, 5, -9, 4, 7],
+        };
+
+        let expected_result: Matrix<i32> = Matrix {
+            rows: 3,
+            cols: 2,
+            values: vec![1, 9, -3, 4, 5, 7],
+        };
+
+        matrix_a.transpose();
+        assert_eq!(matrix_a, expected_result);
+    }
 }
