@@ -56,7 +56,7 @@ where
         })
     }
 
-    pub fn transpose(&mut self) {
+    pub fn transpose(&self) -> Matrix<T> {
         let mut new_values: Vec<T> = Vec::with_capacity(self.rows * self.cols);
 
         for i in 0..self.cols {
@@ -65,8 +65,11 @@ where
             }
         }
 
-        std::mem::swap(&mut self.rows, &mut self.cols);
-        self.values = new_values;
+        Matrix {
+            rows: self.cols,
+            cols: self.rows,
+            values: new_values,
+        }
     }
 
     pub fn mult_naive(&self, matrix_b: &mut Matrix<T>) -> Result<Matrix<T>, &str> {
