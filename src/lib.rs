@@ -97,6 +97,18 @@ where
             values: new_values,
         })
     }
+
+    pub fn mult_strassen(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
+        if self.cols != matrix_b.rows {
+            return Err("Cannot multiply, dimensions do not match");
+        }
+
+        Ok(Matrix {
+            rows: matrix_b.rows,
+            cols: self.cols,
+            values: vec![],
+        })
+    }
 }
 
 #[cfg(test)]
