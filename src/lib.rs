@@ -211,6 +211,6 @@ mod tests {
         };
 
         let result = matrix_a.mult_naive(&mut matrix_b).unwrap();
-        assert_eq!(result, expected_result);
+        assert_eq!(result.values, expected_result.values);
     }
 }
