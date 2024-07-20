@@ -72,19 +72,19 @@ where
         }
     }
 
-    pub fn mult_naive(&self, matrix_b: &mut Matrix<T>) -> Result<Matrix<T>, &str> {
+    pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
         if self.cols != matrix_b.rows {
             return Err("Unable to multiply, invalid dimensions");
         }
 
-        matrix_b.transpose();
+        let b_t = matrix_b.transpose();
         let mut new_values: Vec<T> = Vec::with_capacity(matrix_b.rows * self.cols);
 
         for i in 0..self.rows {
             for j in 0..matrix_b.cols {
                 let mut sum: T = Default::default();
                 for k in 0..self.cols {
-                    sum += *self.get(i, k).unwrap() * *matrix_b.get(j, k).unwrap();
+                    sum += *self.get(i, k).unwrap() * *b_t.get(j, k).unwrap();
                 }
 
                 new_values.push(sum);
@@ -174,7 +174,7 @@ mod tests {
 
     #[test]
     fn check_transpose() {
-        let mut matrix_a: Matrix<i32> = Matrix {
+        let matrix_a: Matrix<i32> = Matrix {
             rows: 2,
             cols: 3,
             values: vec![1, -3, 5, -9, 4, 7],
@@ -186,8 +186,8 @@ mod tests {
             values: vec![1, -9, -3, 4, 5, 7],
         };
 
-        matrix_a.transpose();
-        assert_eq!(matrix_a, expected_result);
+        let a_t = matrix_a.transpose();
+        assert_eq!(a_t, expected_result);
     }
 
     #[test]
