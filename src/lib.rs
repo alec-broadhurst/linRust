@@ -11,6 +11,14 @@ impl<T> Matrix<T>
 where
     T: Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Copy + Default + AddAssign,
 {
+    pub fn new(rows: usize, cols: usize, values: Vec<T>) -> Matrix<T> {
+        Matrix {
+            rows: rows,
+            cols: cols,
+            values: values,
+        }
+    }
+
     pub fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row < self.rows && col < self.cols {
             let index = (row * self.cols) + col;
