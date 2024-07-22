@@ -39,11 +39,7 @@ where
             new_values.push(self.values[i] + matrix_b.values[i]);
         }
 
-        Ok(Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            values: new_values,
-        })
+        Ok(Matrix::new(self.rows, self.cols, new_values))
     }
 
     pub fn subtract(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
@@ -57,11 +53,7 @@ where
             new_values.push(self.values[i] - matrix_b.values[i]);
         }
 
-        Ok(Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            values: new_values,
-        })
+        Ok(Matrix::new(self.rows, self.cols, new_values))
     }
 
     pub fn transpose(&self) -> Matrix<T> {
@@ -73,11 +65,7 @@ where
             }
         }
 
-        Matrix {
-            rows: self.cols,
-            cols: self.rows,
-            values: new_values,
-        }
+        Matrix::new(self.cols, self.rows, new_values)
     }
 
     pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
@@ -99,11 +87,7 @@ where
             }
         }
 
-        Ok(Matrix {
-            rows: matrix_b.rows,
-            cols: self.cols,
-            values: new_values,
-        })
+        Ok(Matrix::new(matrix_b.rows, self.cols, new_values))
     }
 }
 
