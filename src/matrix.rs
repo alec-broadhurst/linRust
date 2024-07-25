@@ -135,6 +135,12 @@ where
 
         Ok(Matrix::new(matrix_b.rows, self.cols, new_values))
     }
+
+    pub fn mult_scalar(&mut self, num: T) {
+        for value in &mut self.values {
+            *value = *value * num;
+        }
+    }
 }
 
 #[cfg(test)]
