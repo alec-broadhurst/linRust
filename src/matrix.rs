@@ -53,7 +53,7 @@ where
         }
     }
 
-    pub fn get(&self, row: usize, col: usize) -> Result<&T, MatrixError> {
+    pub fn value_at(&self, row: usize, col: usize) -> Result<&T, MatrixError> {
         if row < self.rows && col < self.cols {
             let index = (row * self.cols) + col;
             Ok(&self.values[index])
