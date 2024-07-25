@@ -205,4 +205,15 @@ mod tests {
             Err(e) => panic!("{}", e),
         }
     }
+
+    #[test]
+    fn check_scalar_multiplication() {
+        let mut matrix: Matrix<i32> = Matrix::new(2, 2, vec![1, -2, 3, 4]);
+        let scalar = 3;
+        let expected_result: Matrix<i32> = Matrix::new(2, 2, vec![3, -6, 9, 12]);
+
+        matrix.mult_scalar(scalar);
+
+        assert_eq!(matrix, expected_result);
+    }
 }
