@@ -1,5 +1,8 @@
 use std::ops::{Add, AddAssign, Mul, Sub};
 
+mod error;
+use error::MatrixError;
+
 #[derive(Debug, PartialEq)]
 pub struct Matrix<T> {
     rows: usize,
@@ -28,9 +31,12 @@ where
         }
     }
 
-    pub fn add(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
+    pub fn add(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
         if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
-            return Err("Cannot add, matrices must have matching dimensions");
+            return Err(MatrixError::DimensionMismatch(format!(
+                "Cannot add matricies of dimensions {}x{} and {}x{}",
+                self.rows, self.cols, matrix_b.rows, matrix_b.cols
+            )));
         }
 
         let mut new_values: Vec<T> = Vec::with_capacity(self.values.len());
@@ -42,9 +48,12 @@ where
         Ok(Matrix::new(self.rows, self.cols, new_values))
     }
 
-    pub fn subtract(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
+    pub fn subtract(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
         if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
-            return Err("Cannot subtract, matrices must have matching dimensions");
+            return Err(MatrixError::DimensionMismatch(format!(
+                "Cannot subtract matricies of dimensions {}x{} and {}x{}",
+                self.rows, self.cols, matrix_b.rows, matrix_b.cols
+            )));
         }
 
         let mut new_values: Vec<T> = Vec::with_capacity(self.values.len());
@@ -68,9 +77,12 @@ where
         Matrix::new(self.cols, self.rows, new_values)
     }
 
-    pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, &str> {
+    pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
         if self.cols != matrix_b.rows {
-            return Err("Unable to multiply, invalid dimensions");
+            return Err(MatrixError::DimensionMismatch(format!(
+                "Cannot multiply  matricies of dimensions {}x{} and {}x{}",
+                self.rows, self.cols, matrix_b.rows, matrix_b.cols
+            )));
         }
 
         let b_t = matrix_b.transpose();
@@ -134,7 +146,7 @@ mod tests {
 
         match matrix_a.add(&matrix_b) {
             Ok(result) => assert_eq!(result, expected_result),
-            Err(e) => panic!("Addition failed: {}", e),
+            Err(e) => panic!("{}", e),
         }
     }
 
@@ -160,7 +172,7 @@ mod tests {
 
         match matrix_a.subtract(&matrix_b) {
             Ok(result) => assert_eq!(result, expected_result),
-            Err(e) => panic!("Addition failed: {}", e),
+            Err(e) => panic!("{}", e),
         }
     }
 
@@ -202,7 +214,9 @@ mod tests {
             values: vec![58, 64, 139, 154],
         };
 
-        let result = matrix_a.mult_naive(&mut matrix_b).unwrap();
-        assert_eq!(result.values, expected_result.values);
+        match matrix_a.mult_naive(&mut matrix_b) {
+            Ok(result) => assert_eq!(result.values, expected_result.values),
+            Err(e) => panic!("{}", e),
+        }
     }
 }
