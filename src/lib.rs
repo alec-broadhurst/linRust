@@ -125,23 +125,9 @@ mod tests {
 
     #[test]
     fn check_addition() {
-        let matrix_a: Matrix<u32> = Matrix {
-            rows: 2,
-            cols: 2,
-            values: vec![1, 2, 3, 4],
-        };
-
-        let matrix_b: Matrix<u32> = Matrix {
-            rows: 2,
-            cols: 2,
-            values: vec![5, 6, 7, 8],
-        };
-
-        let expected_result: Matrix<u32> = Matrix {
-            rows: 2,
-            cols: 2,
-            values: vec![6, 8, 10, 12],
-        };
+        let matrix_a: Matrix<u32> = Matrix::new(2, 2, vec![1, 2, 3, 4]);
+        let matrix_b: Matrix<u32> = Matrix::new(2, 2, vec![5, 6, 7, 8]);
+        let expected_result: Matrix<u32> = Matrix::new(2, 2, vec![6, 8, 10, 12]);
 
         match matrix_a.add(&matrix_b) {
             Ok(result) => assert_eq!(result, expected_result),
@@ -151,23 +137,10 @@ mod tests {
 
     #[test]
     fn check_subtraction() {
-        let matrix_a: Matrix<i32> = Matrix {
-            rows: 3,
-            cols: 3,
-            values: vec![1, 2, 3, 4, 5, 6, 7, 8, 9],
-        };
-
-        let matrix_b: Matrix<i32> = Matrix {
-            rows: 3,
-            cols: 3,
-            values: vec![10, 21, 12, 13, 14, 15, 16, 17, 18],
-        };
-
-        let expected_result: Matrix<i32> = Matrix {
-            rows: 3,
-            cols: 3,
-            values: vec![-9, -19, -9, -9, -9, -9, -9, -9, -9],
-        };
+        let matrix_a: Matrix<i32> = Matrix::new(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let matrix_b: Matrix<i32> = Matrix::new(3, 3, vec![10, 21, 12, 13, 14, 15, 16, 17, 18]);
+        let expected_result: Matrix<i32> =
+            Matrix::new(3, 3, vec![-9, -19, -9, -9, -9, -9, -9, -9, -9]);
 
         match matrix_a.subtract(&matrix_b) {
             Ok(result) => assert_eq!(result, expected_result),
@@ -177,17 +150,8 @@ mod tests {
 
     #[test]
     fn check_transpose() {
-        let matrix_a: Matrix<i32> = Matrix {
-            rows: 2,
-            cols: 3,
-            values: vec![1, -3, 5, -9, 4, 7],
-        };
-
-        let expected_result: Matrix<i32> = Matrix {
-            rows: 3,
-            cols: 2,
-            values: vec![1, -9, -3, 4, 5, 7],
-        };
+        let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
+        let expected_result: Matrix<i32> = Matrix::new(3, 2, vec![1, -9, -3, 4, 5, 7]);
 
         let a_t = matrix_a.transpose();
         assert_eq!(a_t, expected_result);
@@ -195,23 +159,9 @@ mod tests {
 
     #[test]
     fn check_naive() {
-        let matrix_a: Matrix<i32> = Matrix {
-            rows: 2,
-            cols: 3,
-            values: vec![1, 2, 3, 4, 5, 6],
-        };
-
-        let mut matrix_b: Matrix<i32> = Matrix {
-            rows: 3,
-            cols: 2,
-            values: vec![7, 8, 9, 10, 11, 12],
-        };
-
-        let expected_result: Matrix<i32> = Matrix {
-            rows: 2,
-            cols: 2,
-            values: vec![58, 64, 139, 154],
-        };
+        let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, 2, 3, 4, 5, 6]);
+        let mut matrix_b: Matrix<i32> = Matrix::new(3, 2, vec![7, 8, 9, 10, 11, 12]);
+        let expected_result: Matrix<i32> = Matrix::new(2, 2, vec![58, 64, 139, 154]);
 
         match matrix_a.mult_naive(&mut matrix_b) {
             Ok(result) => assert_eq!(result.values, expected_result.values),
