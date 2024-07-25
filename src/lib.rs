@@ -22,12 +22,15 @@ where
         }
     }
 
-    pub fn get(&self, row: usize, col: usize) -> Option<&T> {
+    pub fn get(&self, row: usize, col: usize) -> Result<&T, MatrixError> {
         if row < self.rows && col < self.cols {
             let index = (row * self.cols) + col;
-            Some(&self.values[index])
+            Ok(&self.values[index])
         } else {
-            None
+            Err(MatrixError::InvalidIndex(format!(
+                "Index ({}, {}) is out of bounds for matrix of size {}x{}",
+                row, col, self.rows, self.cols
+            )))
         }
     }
 
@@ -109,19 +112,15 @@ mod tests {
 
     #[test]
     fn check_indexing() {
-        let matrix: Matrix<u32> = Matrix {
-            rows: 3,
-            cols: 3,
-            values: vec![1, 2, 3, 4, 5, 6, 7, 8, 9],
-        };
+        let matrix: Matrix<u32> = Matrix::new(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-        assert_eq!(matrix.get(0, 0), Some(&1));
-        assert_eq!(matrix.get(1, 1), Some(&5));
-        assert_eq!(matrix.get(2, 0), Some(&7));
+        assert_eq!(matrix.get(0, 0).unwrap(), &1);
+        assert_eq!(matrix.get(1, 1).unwrap(), &5);
+        assert_eq!(matrix.get(2, 0).unwrap(), &7);
 
-        assert_eq!(matrix.get(3, 0), None);
-        assert_eq!(matrix.get(0, 3), None);
-        assert_eq!(matrix.get(3, 3), None);
+        assert!(matrix.get(3, 0).is_err());
+        assert!(matrix.get(0, 3).is_err());
+        assert!(matrix.get(3, 3).is_err());
     }
 
     #[test]
