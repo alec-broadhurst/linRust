@@ -40,8 +40,17 @@ where
         self.cols = new_cols;
     }
 
-    pub fn set_values(&mut self, new_values: Vec<T>) {
-        self.values = new_values;
+    pub fn set_values(&mut self, new_values: Vec<T>) -> Result<(), MatrixError> {
+        if new_values.len() == self.rows * self.cols {
+            self.values = new_values;
+            Ok(())
+        } else {
+            Err(MatrixError::DimensionMismatch(format!(
+                "Matrix has capacity of {}, gave it {} values",
+                self.rows * self.cols,
+                new_values.len()
+            )))
+        }
     }
 
     pub fn get(&self, row: usize, col: usize) -> Result<&T, MatrixError> {
