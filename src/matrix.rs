@@ -104,7 +104,7 @@ where
 
         for i in 0..self.cols {
             for j in 0..self.rows {
-                new_values.push(*self.get(j, i).unwrap());
+                new_values.push(*self.value_at(j, i).unwrap());
             }
         }
 
@@ -126,7 +126,7 @@ where
             for j in 0..matrix_b.cols {
                 let mut sum: T = Default::default();
                 for k in 0..self.cols {
-                    sum += *self.get(i, k).unwrap() * *b_t.get(j, k).unwrap();
+                    sum += *self.value_at(i, k).unwrap() * *b_t.value_at(j, k).unwrap();
                 }
 
                 new_values.push(sum);
@@ -145,13 +145,13 @@ mod tests {
     fn check_indexing() {
         let matrix: Matrix<u32> = Matrix::new(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-        assert_eq!(matrix.get(0, 0).unwrap(), &1);
-        assert_eq!(matrix.get(1, 1).unwrap(), &5);
-        assert_eq!(matrix.get(2, 0).unwrap(), &7);
+        assert_eq!(matrix.value_at(0, 0).unwrap(), &1);
+        assert_eq!(matrix.value_at(1, 1).unwrap(), &5);
+        assert_eq!(matrix.value_at(2, 0).unwrap(), &7);
 
-        assert!(matrix.get(3, 0).is_err());
-        assert!(matrix.get(0, 3).is_err());
-        assert!(matrix.get(3, 3).is_err());
+        assert!(matrix.value_at(3, 0).is_err());
+        assert!(matrix.value_at(0, 3).is_err());
+        assert!(matrix.value_at(3, 3).is_err());
     }
 
     #[test]
