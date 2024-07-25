@@ -32,6 +32,18 @@ where
         &self.values
     }
 
+    pub fn set_rows(&mut self, new_rows: usize) {
+        self.rows = new_rows;
+    }
+
+    pub fn set_cols(&mut self, new_cols: usize) {
+        self.cols = new_cols;
+    }
+
+    pub fn set_values(&mut self, new_values: Vec<T>) {
+        self.values = new_values;
+    }
+
     pub fn get(&self, row: usize, col: usize) -> Result<&T, MatrixError> {
         if row < self.rows && col < self.cols {
             let index = (row * self.cols) + col;
