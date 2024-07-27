@@ -1,4 +1,5 @@
 use crate::error::MatrixError;
+use crate::identity_element::IdentityElement;
 use std::ops::{Add, AddAssign, Mul, Sub};
 
 #[derive(Debug, PartialEq)]
@@ -10,7 +11,13 @@ pub struct Matrix<T> {
 
 impl<T> Matrix<T>
 where
-    T: Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Copy + Default + AddAssign,
+    T: Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Copy
+        + Default
+        + AddAssign
+        + IdentityElement,
 {
     pub fn new(rows: usize, cols: usize, values: Vec<T>) -> Matrix<T> {
         Matrix {
@@ -140,6 +147,16 @@ where
         for value in &mut self.values {
             *value = *value * num;
         }
+    }
+
+    pub fn identity(order: usize) -> Matrix<T> {
+        let mut values: Vec<T> = vec![T::zero(); order * order];
+
+        for i in 0..order {
+            values[i * order + i] = T::one();
+        }
+
+        Matrix::new(order, order, values)
     }
 }
 
