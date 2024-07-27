@@ -233,4 +233,22 @@ mod tests {
 
         assert_eq!(matrix, expected_result);
     }
+
+    #[test]
+    fn check_identity() {
+        let identity_matrix_2x2: Matrix<f64> = Matrix::identity(2);
+        let expected_result_2x2: Matrix<f64> = Matrix::new(2, 2, vec![1.0, 0.0, 0.0, 1.0]);
+
+        let identity_matrix_10x10: Matrix<u16> = Matrix::identity(10);
+        let values: Vec<u16> = vec![
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        ];
+        let expected_result_10x10: Matrix<u16> = Matrix::new(10, 10, values);
+
+        assert_eq!(identity_matrix_2x2, expected_result_2x2);
+        assert_eq!(identity_matrix_10x10, expected_result_10x10)
+    }
 }
