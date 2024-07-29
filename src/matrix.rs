@@ -39,12 +39,14 @@ where
         &self.values
     }
 
-    pub fn set_rows(&mut self, new_rows: usize) {
+    pub fn set_rows(&mut self, new_rows: usize) -> &mut Self {
         self.rows = new_rows;
+        self
     }
 
-    pub fn set_cols(&mut self, new_cols: usize) {
+    pub fn set_cols(&mut self, new_cols: usize) -> &mut Self {
         self.cols = new_cols;
+        self
     }
 
     pub fn set_values(&mut self, new_values: Vec<T>) -> Result<(), MatrixError> {
@@ -72,7 +74,7 @@ where
         }
     }
 
-    pub fn add(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
+    pub fn add(&mut self, matrix_b: &Matrix<T>) -> Result<&mut Self, MatrixError> {
         if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot add matricies of dimensions {}x{} and {}x{}",
@@ -80,16 +82,14 @@ where
             )));
         }
 
-        let mut new_values: Vec<T> = Vec::with_capacity(self.values.len());
-
         for i in 0..self.values.len() {
-            new_values.push(self.values[i] + matrix_b.values[i]);
+            self.values[i] = self.values[i] + matrix_b.values[i];
         }
 
-        Ok(Matrix::new(self.rows, self.cols, new_values))
+        Ok(self)
     }
 
-    pub fn subtract(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
+    pub fn subtract(&mut self, matrix_b: &Matrix<T>) -> Result<&mut Self, MatrixError> {
         if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot subtract matricies of dimensions {}x{} and {}x{}",
@@ -97,16 +97,14 @@ where
             )));
         }
 
-        let mut new_values: Vec<T> = Vec::with_capacity(self.values.len());
-
         for i in 0..self.values.len() {
-            new_values.push(self.values[i] - matrix_b.values[i]);
+            self.values[i] = self.values[i] - matrix_b.values[i];
         }
 
-        Ok(Matrix::new(self.rows, self.cols, new_values))
+        Ok(self)
     }
 
-    pub fn transpose(&self) -> Matrix<T> {
+    pub fn transpose(&mut self) -> &mut Self {
         let mut new_values: Vec<T> = Vec::with_capacity(self.rows * self.cols);
 
         for i in 0..self.cols {
@@ -115,10 +113,13 @@ where
             }
         }
 
-        Matrix::new(self.cols, self.rows, new_values)
+        self.values = new_values;
+        std::mem::swap(&mut self.rows, &mut self.cols);
+
+        self
     }
 
-    pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
+    pub fn mult_naive(&mut self, matrix_b: &mut Matrix<T>) -> Result<&mut Self, MatrixError> {
         if self.cols != matrix_b.rows {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot multiply  matricies of dimensions {}x{} and {}x{}",
@@ -126,27 +127,35 @@ where
             )));
         }
 
-        let b_t = matrix_b.transpose();
+        matrix_b.transpose();
+
         let mut new_values: Vec<T> = Vec::with_capacity(matrix_b.rows * self.cols);
 
         for i in 0..self.rows {
-            for j in 0..matrix_b.cols {
+            for j in 0..matrix_b.rows {
                 let mut sum: T = Default::default();
                 for k in 0..self.cols {
-                    sum += *self.value_at(i, k).unwrap() * *b_t.value_at(j, k).unwrap();
+                    sum += *self.value_at(i, k).unwrap() * *matrix_b.value_at(j, k).unwrap();
                 }
 
                 new_values.push(sum);
             }
         }
 
-        Ok(Matrix::new(matrix_b.rows, self.cols, new_values))
+        self.values = new_values;
+        self.cols = matrix_b.cols;
+
+        matrix_b.transpose();
+
+        Ok(self)
     }
 
-    pub fn mult_scalar(&mut self, num: T) {
+    pub fn mult_scalar(&mut self, num: T) -> &mut Self {
         for value in &mut self.values {
             *value = *value * num;
         }
+
+        self
     }
 
     pub fn identity(order: usize) -> Matrix<T> {
@@ -179,46 +188,45 @@ mod tests {
 
     #[test]
     fn check_addition() {
-        let matrix_a: Matrix<u32> = Matrix::new(2, 2, vec![1, 2, 3, 4]);
+        let mut matrix_a: Matrix<u32> = Matrix::new(2, 2, vec![1, 2, 3, 4]);
         let matrix_b: Matrix<u32> = Matrix::new(2, 2, vec![5, 6, 7, 8]);
-        let expected_result: Matrix<u32> = Matrix::new(2, 2, vec![6, 8, 10, 12]);
+        let expected_result: Vec<u32> = vec![6, 8, 10, 12];
 
         match matrix_a.add(&matrix_b) {
-            Ok(result) => assert_eq!(result, expected_result),
+            Ok(_) => assert_eq!(matrix_a.values, expected_result),
             Err(e) => panic!("{}", e),
         }
     }
 
     #[test]
     fn check_subtraction() {
-        let matrix_a: Matrix<i32> = Matrix::new(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let mut matrix_a: Matrix<i32> = Matrix::new(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
         let matrix_b: Matrix<i32> = Matrix::new(3, 3, vec![10, 21, 12, 13, 14, 15, 16, 17, 18]);
-        let expected_result: Matrix<i32> =
-            Matrix::new(3, 3, vec![-9, -19, -9, -9, -9, -9, -9, -9, -9]);
+        let expected_result: Vec<i32> = vec![-9, -19, -9, -9, -9, -9, -9, -9, -9];
 
         match matrix_a.subtract(&matrix_b) {
-            Ok(result) => assert_eq!(result, expected_result),
+            Ok(_) => assert_eq!(matrix_a.values, expected_result),
             Err(e) => panic!("{}", e),
         }
     }
 
     #[test]
     fn check_transpose() {
-        let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
+        let mut matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
         let expected_result: Matrix<i32> = Matrix::new(3, 2, vec![1, -9, -3, 4, 5, 7]);
 
-        let a_t = matrix_a.transpose();
-        assert_eq!(a_t, expected_result);
+        matrix_a.transpose();
+        assert_eq!(matrix_a, expected_result);
     }
 
     #[test]
     fn check_naive() {
-        let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, 2, 3, 4, 5, 6]);
+        let mut matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, 2, 3, 4, 5, 6]);
         let mut matrix_b: Matrix<i32> = Matrix::new(3, 2, vec![7, 8, 9, 10, 11, 12]);
-        let expected_result: Matrix<i32> = Matrix::new(2, 2, vec![58, 64, 139, 154]);
+        let expected_result: Vec<i32> = vec![58, 64, 139, 154];
 
         match matrix_a.mult_naive(&mut matrix_b) {
-            Ok(result) => assert_eq!(result.values, expected_result.values),
+            Ok(_) => assert_eq!(matrix_a.values, expected_result),
             Err(e) => panic!("{}", e),
         }
     }
