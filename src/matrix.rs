@@ -119,7 +119,7 @@ where
         self
     }
 
-    pub fn mult_naive(&mut self, matrix_b: &mut Matrix<T>) -> Result<&mut Self, MatrixError> {
+    pub fn mult_naive(&self, matrix_b: &mut Matrix<T>) -> Result<Matrix<T>, MatrixError> {
         if self.cols != matrix_b.rows {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot multiply  matricies of dimensions {}x{} and {}x{}",
@@ -142,12 +142,9 @@ where
             }
         }
 
-        self.values = new_values;
-        self.cols = matrix_b.cols;
-
         matrix_b.transpose();
 
-        Ok(self)
+        Ok(Matrix::new(self.rows, matrix_b.cols, new_values))
     }
 
     pub fn mult_scalar(&mut self, num: T) -> &mut Self {
@@ -221,12 +218,12 @@ mod tests {
 
     #[test]
     fn check_naive() {
-        let mut matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, 2, 3, 4, 5, 6]);
+        let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, 2, 3, 4, 5, 6]);
         let mut matrix_b: Matrix<i32> = Matrix::new(3, 2, vec![7, 8, 9, 10, 11, 12]);
         let expected_result: Vec<i32> = vec![58, 64, 139, 154];
 
         match matrix_a.mult_naive(&mut matrix_b) {
-            Ok(_) => assert_eq!(matrix_a.values, expected_result),
+            Ok(matrix_c) => assert_eq!(matrix_c.values, expected_result),
             Err(e) => panic!("{}", e),
         }
     }
