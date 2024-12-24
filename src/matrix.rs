@@ -104,7 +104,7 @@ where
         Ok(self)
     }
 
-    pub fn transpose(&mut self) -> &mut Self {
+    pub fn transpose(&self) -> Matrix<T> {
         let mut new_values: Vec<T> = Vec::with_capacity(self.rows * self.cols);
 
         for i in 0..self.cols {
@@ -113,10 +113,7 @@ where
             }
         }
 
-        self.values = new_values;
-        std::mem::swap(&mut self.rows, &mut self.cols);
-
-        self
+        Matrix::new(self.cols, self.rows, new_values)
     }
 
     pub fn mult_naive(&self, matrix_b: &mut Matrix<T>) -> Result<Matrix<T>, MatrixError> {
@@ -209,11 +206,11 @@ mod tests {
 
     #[test]
     fn check_transpose() {
-        let mut matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
+        let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
         let expected_result: Matrix<i32> = Matrix::new(3, 2, vec![1, -9, -3, 4, 5, 7]);
 
-        matrix_a.transpose();
-        assert_eq!(matrix_a, expected_result);
+        let matrix_at = matrix_a.transpose();
+        assert_eq!(matrix_at, expected_result);
     }
 
     #[test]
