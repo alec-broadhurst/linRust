@@ -105,11 +105,11 @@ where
     }
 
     pub fn transpose(&self) -> Matrix<T> {
-        let mut new_values: Vec<T> = Vec::with_capacity(self.rows * self.cols);
+        let mut new_values: Vec<T> = vec![T::default(); self.rows * self.cols];
 
         for i in 0..self.cols {
             for j in 0..self.rows {
-                new_values.push(self.values[(j * self.cols) + i]);
+                new_values[i * self.rows + j] = self.values[j * self.cols + i];
             }
         }
 
