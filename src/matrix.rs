@@ -109,7 +109,7 @@ where
 
         for i in 0..self.cols {
             for j in 0..self.rows {
-                new_values.push(*self.value_at(j, i).unwrap());
+                new_values.push(self.values[(j * self.cols) + i]);
             }
         }
 
