@@ -116,7 +116,7 @@ where
         Matrix::new(self.cols, self.rows, new_values)
     }
 
-    pub fn mult_naive(&self, matrix_b: &mut Matrix<T>) -> Result<Matrix<T>, MatrixError> {
+    pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
         if self.cols != matrix_b.rows {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot multiply  matricies of dimensions {}x{} and {}x{}",
@@ -124,22 +124,20 @@ where
             )));
         }
 
-        matrix_b.transpose();
+        let bt = matrix_b.transpose();
 
-        let mut new_values: Vec<T> = Vec::with_capacity(matrix_b.rows * self.cols);
+        let mut new_values: Vec<T> = vec![T::default(); self.rows * matrix_b.cols];
 
         for i in 0..self.rows {
-            for j in 0..matrix_b.rows {
+            for j in 0..bt.rows {
                 let mut sum: T = Default::default();
                 for k in 0..self.cols {
-                    sum += *self.value_at(i, k).unwrap() * *matrix_b.value_at(j, k).unwrap();
+                    sum += self.values[i * self.cols + k] * bt.values[j * bt.cols + k];
                 }
 
-                new_values.push(sum);
+                new_values[i * matrix_b.cols + j] = sum;
             }
         }
-
-        matrix_b.transpose();
 
         Ok(Matrix::new(self.rows, matrix_b.cols, new_values))
     }
