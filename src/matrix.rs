@@ -107,7 +107,25 @@ where
         Ok(self)
     }
 
-    pub fn subtract(&mut self, matrix_b: &Matrix<T>) -> Result<&mut Self, MatrixError> {
+    pub fn subtract(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
+        if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
+            return Err(MatrixError::DimensionMismatch(format!(
+                "Cannot subtract matricies of dimensions {}x{} and {}x{}",
+                self.rows, self.cols, matrix_b.rows, matrix_b.cols
+            )));
+        }
+
+        let new_values: Vec<T> = self
+            .values
+            .iter()
+            .zip(&matrix_b.values)
+            .map(|(a, b)| *a - *b)
+            .collect();
+
+        Ok(Matrix::new(self.rows, self.cols, new_values))
+    }
+
+    pub fn subtract_mut(&mut self, matrix_b: &Matrix<T>) -> Result<&mut Self, MatrixError> {
         if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot subtract matricies of dimensions {}x{} and {}x{}",
@@ -214,7 +232,7 @@ mod tests {
         let matrix_b: Matrix<i32> = Matrix::new(3, 3, vec![10, 21, 12, 13, 14, 15, 16, 17, 18]);
         let expected_result: Vec<i32> = vec![-9, -19, -9, -9, -9, -9, -9, -9, -9];
 
-        match matrix_a.subtract(&matrix_b) {
+        match matrix_a.subtract_mut(&matrix_b) {
             Ok(_) => assert_eq!(matrix_a.values, expected_result),
             Err(e) => panic!("{}", e),
         }
