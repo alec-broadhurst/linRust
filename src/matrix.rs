@@ -74,7 +74,25 @@ where
         }
     }
 
-    pub fn add(&mut self, matrix_b: &Matrix<T>) -> Result<&mut Self, MatrixError> {
+    pub fn add(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
+        if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
+            return Err(MatrixError::DimensionMismatch(format!(
+                "Cannot add matrices of dimensions {}x{} and {}x{}",
+                self.rows, self.cols, matrix_b.rows, matrix_b.cols
+            )));
+        }
+
+        let new_values: Vec<T> = self
+            .values
+            .iter()
+            .zip(&matrix_b.values)
+            .map(|(a, b)| *a + *b)
+            .collect();
+
+        Ok(Matrix::new(self.rows, self.cols, new_values))
+    }
+
+    pub fn add_mut(&mut self, matrix_b: &Matrix<T>) -> Result<&mut Self, MatrixError> {
         if self.rows != matrix_b.rows || self.cols != matrix_b.cols {
             return Err(MatrixError::DimensionMismatch(format!(
                 "Cannot add matricies of dimensions {}x{} and {}x{}",
@@ -184,7 +202,7 @@ mod tests {
         let matrix_b: Matrix<u32> = Matrix::new(2, 2, vec![5, 6, 7, 8]);
         let expected_result: Vec<u32> = vec![6, 8, 10, 12];
 
-        match matrix_a.add(&matrix_b) {
+        match matrix_a.add_mut(&matrix_b) {
             Ok(_) => assert_eq!(matrix_a.values, expected_result),
             Err(e) => panic!("{}", e),
         }
