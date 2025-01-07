@@ -152,6 +152,19 @@ where
         Matrix::new(self.cols, self.rows, new_values)
     }
 
+    pub fn transpose_mut(&mut self) -> &mut Self {
+        let mut new_values = vec![T::default(); self.rows * self.cols];
+        for i in 0..self.cols {
+            for j in 0..self.rows {
+                new_values[i * self.rows + j] = self.values[j * self.cols + i];
+            }
+        }
+        std::mem::swap(&mut self.values, &mut new_values);
+        std::mem::swap(&mut self.rows, &mut self.cols);
+
+        self
+    }
+
     pub fn mult_naive(&self, matrix_b: &Matrix<T>) -> Result<Matrix<T>, MatrixError> {
         if self.cols != matrix_b.rows {
             return Err(MatrixError::DimensionMismatch(format!(
@@ -239,12 +252,21 @@ mod tests {
     }
 
     #[test]
+    fn check_transpose_mut() {
+        let mut matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
+        let expected_result: Matrix<i32> = Matrix::new(3, 2, vec![1, -9, -3, 4, 5, 7]);
+
+        matrix_a.transpose_mut();
+        assert_eq!(matrix_a, expected_result);
+    }
+
+    #[test]
     fn check_transpose() {
         let matrix_a: Matrix<i32> = Matrix::new(2, 3, vec![1, -3, 5, -9, 4, 7]);
         let expected_result: Matrix<i32> = Matrix::new(3, 2, vec![1, -9, -3, 4, 5, 7]);
 
-        let matrix_at = matrix_a.transpose();
-        assert_eq!(matrix_at, expected_result);
+        let result = matrix_a.transpose();
+        assert_eq!(result, expected_result);
     }
 
     #[test]
